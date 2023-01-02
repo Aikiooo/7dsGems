@@ -113,7 +113,7 @@ def eventLogin(days):
     negativeValue = -daysDifferenceEvent
     count = negativeValue + days
 
-    if count >= 0:
+    if count >= 0 and count <=27:
         total = int(data2['loginEvent'][count])
         return total
     else:
@@ -138,10 +138,11 @@ def eventContent(days):
         return 0
     
 def weeklyCalc(boolWeekly, days, startingDayWeekly):
-    gemsFromWeekly = 0
-    if boolWeekly == False:
-        return gemsFromWeekly
-    if boolWeekly == True:
+    if not boolWeekly:
+        return 0
+    
+    if boolWeekly:
+        gemsFromWeekly = 0
         iterations = 0
         day = startingDayWeekly
         
@@ -155,9 +156,10 @@ def weeklyCalc(boolWeekly, days, startingDayWeekly):
         return gemsFromWeekly
     
 def monthlyCalc(boolMontly, days, startingDayMonthly):
-    if boolMontly == False:
+    if not boolMontly:
         return 0
-    if boolMontly == True:
+    
+    if boolMontly:
         gemsFromMonthly = 0
         iterations = 0
         day = startingDayMonthly
@@ -174,24 +176,16 @@ def monthlyCalc(boolMontly, days, startingDayMonthly):
 def rewardPvP():
     while True:
         try:
-            # Ask the user to input an option
             rankPvP = input("Please select an option: Champion (1), Master (2), Platinum (3), Gold (4), Silver (5), Bronze (6): ")
-
-            # Convert the user's input to an integer
             rankPvP = int(rankPvP)
 
-            # Check if the user's input is a valid option
             if rankPvP in [1, 2, 3, 4, 5, 6]:
-               # The user's input is a valid option, so we can break out of the loop
                 break
             else:
-                # The user's input is not a valid option, so we print an error message and continue the loop
                 print("Invalid input. Please enter a number between 1 and 6.")
         except ValueError:
-            # The user's input could not be converted to an integer, so we print an error message and continue the loop
             print("Invalid input. Please enter a number between 1 and 6.")
 
-# At this point, we know that the user's input is a valid option, so we can do something with it
     if rankPvP == 1:
         print("You selected Champion.")
         rankPvP = "Champion"
@@ -213,28 +207,33 @@ def rewardPvP():
         
     while True:
         try:
-            # Ask the user to input an option
             divisionPvP = input("What division are you in ? Division 1 (1), Division 2 (2), Division 3 (3), Division 4 (4), Division 5 (5): ")
-
-            # Convert the user's input to an integer
             divisionPvP = int(divisionPvP)
 
-            # Check if the user's input is a valid option
             if divisionPvP in [1, 2, 3, 4, 5]:
-                # The user's input is a valid option, so we can break out of the loop
                 break
             else:
-                # The user's input is not a valid option, so we print an error message and continue the loop
                 print("Invalid input. Please enter a number between 1 and 5.")
         except ValueError:
-            # The user's input could not be converted to an integer, so we print an error message and continue the loop
             print("Invalid input. Please enter a number between 1 and 5.")
                 
     print(f'You selected {rankPvP} {divisionPvP}')
     pvp = rankPvP+str(divisionPvP)
     return(pvp)
-                
- 
+
+def printWhatEarned(earnedLocation, textEarnedLocation):
+    return(f"You\'ve earned: {earnedLocation} from {textEarnedLocation}")
+
+def isTrue(response):
+    response = response.lower()
+    if response == "no" or response == "n":
+        return False
+    elif response == "Yes" or response == "y":
+        return True
+    else:
+        print("Invalid response. Expected answer (y/n)")
+        return isTrue(input())
+
 def get_integer(sentence):
     while True:
         try:
@@ -271,77 +270,58 @@ if dayLogin > 7:
 saveDayLogin = dayLogin
     
 
-# Check if the user wants to purchase the weekly bundle
+# Does user buy weekly and monthly?
 if useFile:
-    if 'doWeeklyFile' in locals(): #if exist : run script. If True -> do calc, if False -> return 0
+    if not 'doWeeklyFile' in locals() and not 'doMonthlyFile' in locals():
+        raise Exception("Issue with the inputs.json file")
+    else:
         gemsWeeklyBundle += weeklyCalc(doWeeklyFile, days, dayRewardWeekly)
-    else:
-        raise Exception("This shouldn't be happening, #Issue1")
-    
-    if 'doMonthlyFile' in locals(): #if exist : run script. If True -> do calc, if False -> return 0
         gemsMonthlyBundle += monthlyCalc(doMonthlyFile, days, dayRewardMonthly)
-    else:
-        raise Exception("This shouldn't be happening, #Issue2")
     
-if not useFile:
-    response = input('Do you want to purchase the weekly bundle? (y/n) :')
-    if response == "y" or response == "Y" or response == "Yes" or response == "yes":
+else:
+    doWeekly = isTrue(input('Do you want to purchase the weekly bundle? (y/n) : '))
+    if doWeekly:
         dayRewardWeekly = int(input('At what day reward are you (0 if not purchased, or 1 to 7): '))
-        doWeekly = True
         gemsWeeklyBundle += weeklyCalc(doWeekly, days, dayRewardWeekly)
-    elif response == "n" or response == "N" or response == "No" or response == "no":
-        dayRewardWeekly = None
-        gemsWeeklyBundle += weeklyCalc(doWeekly, days, dayRewardWeekly)
-    else:
-        raise Exception("Wrong input, should be (y/n)")
     
-    response = input('Do you want to purchase the monthly bundle? (y/n): ')
-    if response == "y" or response == "Y" or response == "Yes" or response == "yes":
+    doMonthly = isTrue(input('Do you want to purchase the monthly bundle? (y/n): '))
+    if doMonthly:
         dayRewardMonthly = int(input('At what day reward are you (0 if not purchased, or 1 to 28): '))
-        doMonthly = True
         gemsMonthlyBundle += monthlyCalc(doMonthly, days, dayRewardMonthly)
-    elif response == "n" or response == "N" or response == "No" or response == "no":
-        dayRewardMonthly = None
-        gemsMonthlyBundle += monthlyCalc(doMonthly, days, dayRewardMonthly)
-    else:
-        raise Exception("Wrong input, should be (y/n)")
     
     pvp = rewardPvP()
 
-# Iterate over the number of days to consider
+# Iterate over the number of days given
 for i in range(days):
     gemsEventLogin += eventLogin(i)
     gemsEventContent += eventContent(i)
-
-    # Calculate the date for the current day
-    date = today + timedelta(days=i)
+    # Calculate the date for the current day in the loop
+    date = today + timedelta(days=i+1)
     # Check if the current date is a Monday
     if date.weekday() == 0:
-        # If it is a Monday, add 60 to the gem variable
         gemsPvP += int(options[pvp])
+    if date.weekday() == 1:
+        gemsMaintenance += 2
+        
     dayLogin = dayLogin % 7 + 1
     if dayLogin == 2 or dayLogin == 6:
         gemsLogin += 5
-    if dayLogin == 2:
-        gemsMaintenance += 2
         
     gemsKnighthood += 1
     gemsDailies += 4
-    #gems += 0.75
-
-print(f'You got: {gemsWeeklyBundle} gems from the Weekly Bundle')
-print(f'You got: {gemsMonthlyBundle} gems from the Monthly Bundle')
-print(f'You got: {gemsPvP} gems from the PvP reward')
-print(f'You got: {gemsLogin} gems from base login reward')
-print(f'You got: {gemsEventLogin} gems from the event login reward')
-print(f'You got: {gemsKnighthood} gems from checking in your Knighthood')
-print(f'You got: {gemsDailies} gems from doing your dailies every day')
-print(f'You got: {gemsMaintenance} gems from the maintenance compensation')
-print(f'You got: {gemsEventContent} gems the event available at the moment')
-
+    
+print(printWhatEarned(gemsWeeklyBundle, "gems from the Weekly Bundle"))
+print(printWhatEarned(gemsMonthlyBundle, "gems from the Monthly Bundle"))
+print(printWhatEarned(gemsPvP, " gems from the PvP reward"))
+print(printWhatEarned(gemsLogin, " gems from base login reward"))
+print(printWhatEarned(gemsEventLogin, " gems from the event login reward"))
+print(printWhatEarned(gemsKnighthood, " gems from checking in your Knighthood"))
+print(printWhatEarned(gemsDailies, " gems from doing your dailies every day"))
+print(printWhatEarned(gemsMaintenance, "gems from the maintenance compensation"))
+print(printWhatEarned(gemsEventContent, "gems from the events currently available"))
 gems+= gemsWeeklyBundle + gemsMonthlyBundle + gemsPvP + gemsLogin + gemsEventLogin + gemsKnighthood + gemsDailies + gemsMaintenance + gemsEventContent
-# Print the final value of the gem variable
 print(f'Total gems will be: {gems}')
+
 data = {
     "BuyWeekly": doWeekly,
     "Weekly": dayRewardWeekly,
@@ -353,15 +333,13 @@ data = {
 }
 
 if not useFile:
-    response = input("Do you want to save your inputs into a json file (y/n)? : ")
-    if response == "y" or response == "Y" or response == "Yes" or response == "yes":
+    response = isTrue(input("Do you want to save your inputs into a json file (y/n)? : "))
+    if response:
         with open(path, "w") as output_file:
             # Write the data to the file in JSON format
             json.dump(data, output_file)
             print("File created")
-    elif response == "n" or response == "N" or response == "No" or response == "no":
-        print("As asked, no file has been created")
     else:
-        raise Exception("Wrong input, it should've been (y/n)")
-
+        print("No file created")
+    
 sys.exit()
