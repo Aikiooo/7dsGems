@@ -304,7 +304,7 @@ for i in range(days):
         gemsPvP += int(options[pvp])
     if date.weekday() == 1:
         gemsMaintenance += 2
-    if date.weekday == 6:
+    if date.weekday() == 6:
         gemsDailies += 2
         
     dayLogin = dayLogin % 7 + 1
