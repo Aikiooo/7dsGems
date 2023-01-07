@@ -63,79 +63,23 @@ doMonthly = False
 boolLogin = False
 useFile = False
 
-if os.path.exists(path):
-    yorn = input("A json file already exist, want to use this one (y/n)? : ")
-    if yorn == "y" or yorn == "Y" or yorn == "Yes":
-        useFile = True
-        f = open(path)
-        data = json.load(f)
-        date = datetime.datetime.strptime(data['Date'], "%Y-%m-%d")
-        date = date.date()
-        dateDiff = today - date
-        days_difference = dateDiff.days
-        if "BuyWeekly" in data:
-            if data["BuyWeekly"]:
-                dayRewardWeekly = data['Weekly'] + days_difference
-                doWeeklyFile = True
-            else:
-                doWeeklyFile = False
-        else:
-            raise Exception("Something is missing in your json file, you cannot not use it")
-        if "BuyMonthly" in data:
-            if data["BuyMonthly"]:
-                dayRewardMonthly = data['Monthly'] + days_difference
-                doMonthlyFile = True
-            else:
-                doMonthlyFile = False
-        else:
-            raise Exception("Something is missing in your json file, you cannot not use it")   
-        if "DayLogin" in data:
-            dayLogin = int(data['DayLogin'])
-            boolLogin = True
-        else:
-            raise Exception("Something is missing in your json file, you cannot not use it")
-        if "PvP" in data:
-            pvp = str(data['PvP'])
-        else:
-            raise Exception("Something is missing in your json file, you cannot not use it")
-        
-        boolScript = True
-
-def eventLogin(days):
+def event(days):
     fileEvent = "events"
     pathEvent = f"{curDir}\{fileEvent}.json"
-    g = open(pathEvent)
-    data2 = json.load(g)
-    date = datetime.datetime.strptime(data2['start'][0], "%Y-%m-%d")
-    date = date.date()
-    dateDiffEvent = date - today
-    daysDifferenceEvent = abs(365 + dateDiffEvent.days) -1
-    negativeValue = -daysDifferenceEvent
-    count = negativeValue + days
-
-    if count >= 0 and count <=27:
-        total = int(data2['loginEvent'][count])
-        return total
-    else:
-        return 0
-
-def eventContent(days):
-    fileEvent = "events"
-    pathEvent = f"{curDir}\{fileEvent}.json"
-    g = open(pathEvent)
-    data2 = json.load(g)
-    date = datetime.datetime.strptime(data2['start'][0], "%Y-%m-%d")
-    date = date.date()
-    dateDiffEvent = date - today
-    daysDifferenceEvent = abs(365 + dateDiffEvent.days) -1
-    negativeValue = -daysDifferenceEvent
-    count = negativeValue + days
+    tempEventList = open(pathEvent)
+    eventList = json.load(tempEventList)
+    startingDateEvent = datetime.datetime.strptime(eventList['start'][0], "%Y-%m-%d")
+    startingDateEvent = startingDateEvent.date()
+    dateDiffEvent = (today - startingDateEvent).days
+    eventContentGems = 0
+    eventLoginGems = 0
     
-    if count == 0:
-        total = int(data2["freeSumonEquivalent"][0]) + int(data2["eventBoss"][0]) + int(data2["fromMissions"][0])
-        return total
-    else:
-        return 0
+    if dateDiffEvent + days + 1 == 0:
+        eventContentGems += int(eventList["freeSumonEquivalent"][0]) + int(eventList["eventBoss"][0]) + int(eventList["fromMissions"][0])
+        print(eventContentGems)
+    if dateDiffEvent + days + 1 >= 0 and dateDiffEvent + days + 1 <= 27:
+        eventLoginGems += int(eventList['loginEvent'][dateDiffEvent+days+1])
+    return eventContentGems, eventLoginGems
     
 def weeklyCalc(boolWeekly, days, startingDayWeekly):
     if not boolWeekly:
@@ -228,7 +172,7 @@ def isTrue(response):
     response = response.lower()
     if response == "no" or response == "n":
         return False
-    elif response == "Yes" or response == "y":
+    elif response == "yes" or response == "y":
         return True
     else:
         print("Invalid response. Expected answer (y/n)")
@@ -246,13 +190,70 @@ def get_integer(sentence):
             # If the input is not a valid integer, print an error message and continue the loop
             print("Sorry, that was not a valid integer. Please try again.")
 
+if os.path.exists(path):
+    useFile = isTrue(input("A json file already exist, want to use this one (y/n)? : "))
+    if useFile:
+        f = open(path)
+        data = json.load(f)
+        date = datetime.datetime.strptime(data['Date'], "%Y-%m-%d")
+        date = date.date()
+        dateDiff = today - date
+        days_difference = dateDiff.days
+        if "BuyWeekly" in data:
+            if data["BuyWeekly"]:
+                dayRewardWeekly = data['Weekly'] + days_difference
+                doWeeklyFile = True
+            else:
+                doWeeklyFile = False
+        else:
+            raise Exception("Something is missing in your json file, you cannot not use it")
+        if "BuyMonthly" in data:
+            if data["BuyMonthly"]:
+                dayRewardMonthly = data['Monthly'] + days_difference
+                doMonthlyFile = True
+            else:
+                doMonthlyFile = False
+        else:
+            raise Exception("Something is missing in your json file, you cannot not use it")   
+        if "DayLogin" in data:
+            dayLogin = int(data['DayLogin'])
+            boolLogin = True
+        else:
+            raise Exception("Something is missing in your json file, you cannot not use it")
+        if "PvP" in data:
+            pvp = str(data['PvP'])
+        else:
+            raise Exception("Something is missing in your json file, you cannot not use it")
+        
+        boolScript = True
+
+
 # Prompt the user for the initial value of the gem variable
-gems = input('How many gems do you have? : ')
-gems = int(gems)
+gems = get_integer('How many gems do you have? : ')
 
 # Prompt the user for the number of days to consider
-days = input('For how many days does it has to calculate? : ')
-days = int(days)
+daysOrDatePrompted = input(f'For how many days does it has to calculate?\nYou can also type a date in format: {today}: ')
+daysOrDatePrompted = daysOrDatePrompted.strip()
+
+if daysOrDatePrompted.isdigit():
+    days = int(daysOrDatePrompted)
+    print(f"It will calculate the number of gems earned in {days} days.")
+    pass
+else:
+    # Try to parse the date
+    try:
+        daysOrDatePrompted = daysOrDatePrompted.replace("/", "-")
+        daysOrDatePrompted = datetime.datetime.strptime(daysOrDatePrompted, "%Y-%m-%d")
+        daysOrDatePrompted = daysOrDatePrompted.date()
+        days = (daysOrDatePrompted - today).days
+        print(f"It will calculate the number of gems earned in {days} days.")
+        pass
+    except ValueError:
+        # The user didn't enter a valid date
+        raise Exception("Invalid input. Please try again.")
+if days < 0:
+    raise Exception("Your input resulted in a negative number.")
+
 
 # Prompt the user for which login reward are they at
 while True:
@@ -262,7 +263,7 @@ while True:
         if 1 <= dayLogin <= 14:
             break
         else:
-            print("Sorry, that was not a valid integer between 1 and 14. Please try again.")
+            print("The value cannot be lower than 1 and cannot be higher than 14.")
     except ValueError:
         print("Sorry, that was not a valid integer. Please try again.")
 if dayLogin > 7:
@@ -293,8 +294,9 @@ else:
 
 # Iterate over the number of days given
 for i in range(days):
-    gemsEventLogin += eventLogin(i)
-    gemsEventContent += eventContent(i)
+    gemsEventContentObtainedLastDay, gemsEventLoginObtainedLastDay = event(i)
+    gemsEventContent += gemsEventContentObtainedLastDay
+    gemsEventLogin += gemsEventLoginObtainedLastDay
     # Calculate the date for the current day in the loop
     date = today + timedelta(days=i+1)
     # Check if the current date is a Monday
@@ -302,6 +304,8 @@ for i in range(days):
         gemsPvP += int(options[pvp])
     if date.weekday() == 1:
         gemsMaintenance += 2
+    if date.weekday == 6:
+        gemsDailies += 2
         
     dayLogin = dayLogin % 7 + 1
     if dayLogin == 2 or dayLogin == 6:
