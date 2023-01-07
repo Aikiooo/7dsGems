@@ -195,10 +195,9 @@ if os.path.exists(path):
     if useFile:
         f = open(path)
         data = json.load(f)
-        date = datetime.datetime.strptime(data['Date'], "%Y-%m-%d")
-        date = date.date()
-        dateDiff = today - date
-        days_difference = dateDiff.days
+        savedDate = datetime.datetime.strptime(data['Date'], "%Y-%m-%d")
+        savedDate = savedDate.date()
+        days_difference = (today - savedDate).days
         if "BuyWeekly" in data:
             if data["BuyWeekly"]:
                 dayRewardWeekly = data['Weekly'] + days_difference
@@ -217,6 +216,7 @@ if os.path.exists(path):
             raise Exception("Something is missing in your json file, you cannot not use it")   
         if "DayLogin" in data:
             dayLogin = int(data['DayLogin'])
+            dayLogin += days_difference
             boolLogin = True
         else:
             raise Exception("Something is missing in your json file, you cannot not use it")
