@@ -54,9 +54,16 @@ options = {
     "Bronze5": 10,
 }
 
-curDir = os.path.dirname(os.path.realpath(__file__))
+eventList = {
+    "start": ["2023-01-03"],
+    "loginEvent": [30, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+    "freeSumonEquivalent": [30],
+    "eventBoss": [5],
+    "fromMissions": [10]
+  }
+
 file_name = "inputs"
-path = f"{curDir}\{file_name}.json"
+path = f".\{file_name}.json"
 
 doWeekly = False
 doMonthly = False
@@ -64,10 +71,6 @@ boolLogin = False
 useFile = False
 
 def event(days):
-    fileEvent = "events"
-    pathEvent = f"{curDir}\{fileEvent}.json"
-    tempEventList = open(pathEvent)
-    eventList = json.load(tempEventList)
     startingDateEvent = datetime.datetime.strptime(eventList['start'][0], "%Y-%m-%d")
     startingDateEvent = startingDateEvent.date()
     dateDiffEvent = (today - startingDateEvent).days
