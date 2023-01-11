@@ -4,17 +4,30 @@ import os
 import json
 import sys
 import hashlib
-import requests
 
-with open('7dsGems.py', 'rb') as f:
+github_url = "https://github.com/Aikiooo/7dsGems"
+try:
+    import requests
+    with open('7dsGems.py', 'rb') as f:
+        local_hash = hashlib.sha1(f.read()).hexdigest()
+    try:
+        # check internet connection
+        r = requests.get("https://github.com/")
+        r.raise_for_status()
+        response = requests.get('https://raw.githubusercontent.com/Aikiooo/7dsGems/master/7dsGems.py')
+        remote_hash = hashlib.sha1(response.content).hexdigest()
+
+        if not local_hash == remote_hash:
+            print(f"Not up to date, download latest version of the script --> \033[1;34;40m{github_url}\033[0m <--")
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(f"No Internet connection, check for latest version of the script here --> \033[1;34;40m{github_url}\033[0m <--")
+
+except ImportError:
+    raise SystemExit(f"Cannot check if the script is up to date, check yourself here --> \033[1;34;40m{github_url}\033[0m <-- ")
+
+    
+with open('7dsGems.py', 'rb') as f: 
     local_hash = hashlib.sha1(f.read()).hexdigest()
-
-response = requests.get('https://raw.githubusercontent.com/Aikiooo/7dsGems/master/7dsGems.py')
-remote_hash = hashlib.sha1(response.content).hexdigest()
-
-if not local_hash == remote_hash:
-    github_url = "https://github.com/Aikiooo/7dsGems"
-    print(f"Script not up to date, latest version of the script --> \033[1;34;40m {github_url}\033[0m <--")
 
 # Get today's date
 now = datetime.datetime.today()
@@ -339,9 +352,8 @@ else:
     if doMonthly:
         dayRewardMonthly = int(input('At what day reward are you (0 if not purchased, or 1 to 28): '))
         gemsMonthlyBundle += monthlyCalc(doMonthly, days, dayRewardMonthly)
-    wantDetailedEvent = isTrue(input('Do you want a detailed list of the where the gems from the event were earned? (y/n): '))
-    
     pvp = rewardPvP()
+    wantDetailedEvent = isTrue(input('Do you want a detailed list of the where the gems from the event were earned? (y/n): '))
 
 print("\n",end="")
 # Iterate over the number of days given
