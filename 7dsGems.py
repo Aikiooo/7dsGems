@@ -4,6 +4,9 @@ import os
 import json
 import sys
 
+github_url = "https://github.com/Aikiooo/7dsGems"
+print(f"Latest version of the script --> \033[1;34;40m {github_url}\033[0m <--")
+
 # Get today's date
 now = datetime.datetime.today()
 today = now.date()
@@ -64,7 +67,7 @@ eventList = [{
                 "start": ["2023-01-17"],
                 "finalBoss": [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
                 "specialStoryEvent": [5],
-                "boostedQuoti": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                "boostedDailies": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
              }
 ]
 
