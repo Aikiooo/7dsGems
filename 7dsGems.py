@@ -13,12 +13,11 @@ dayRewardWeekly = None
 
 gemsPvP = 0
 gemsLogin = 0
-gemsEventLogin = 0
 gemsWeeklyBundle = 0
 gemsMonthlyBundle = 0
 gemsDailies = 0
 gemsMaintenance = 0
-gemsEventContent = 0
+gemsEvent = 0
 gemsKnighthood = 0
 pvp = None
 options = {
@@ -54,13 +53,20 @@ options = {
     "Bronze5": 10,
 }
 
-eventList = {
-    "start": ["2023-01-03"],
-    "loginEvent": [30, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-    "freeSumonEquivalent": [30],
-    "eventBoss": [5],
-    "fromMissions": [10]
-  }
+eventList = [{
+                "start": ["2023-01-03"],
+                "loginEvent": [30, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+                "freeSumonEquivalent": [30],
+                "eventBoss": [5],
+                "fromMissions": [10]
+             },
+             {
+                "start": ["2023-01-17"],
+                "finalBoss": [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
+                "specialStoryEvent": [5],
+                "boostedQuoti": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+             }
+]
 
 file_name = "inputs"
 path = f".\{file_name}.json"
@@ -70,18 +76,40 @@ doMonthly = False
 boolLogin = False
 useFile = False
 
-def event(days):
-    startingDateEvent = datetime.datetime.strptime(eventList['start'][0], "%Y-%m-%d")
-    startingDateEvent = startingDateEvent.date()
-    dateDiffEvent = (today - startingDateEvent).days
+def event():
     eventContentGems = 0
-    eventLoginGems = 0
+    eventLoginGems = {}
     
-    if dateDiffEvent + days + 1 == 0:
-        eventContentGems += int(eventList["freeSumonEquivalent"][0]) + int(eventList["eventBoss"][0]) + int(eventList["fromMissions"][0])
-        print(eventContentGems)
-    if dateDiffEvent + days + 1 >= 0 and dateDiffEvent + days + 1 <= 27:
-        eventLoginGems += int(eventList['loginEvent'][dateDiffEvent+days+1])
+    for xEvent in eventList:
+        dateDiffEvent = (today - datetime.datetime.strptime(xEvent['start'][0], "%Y-%m-%d").date()).days
+        for key, values in xEvent.items():
+            if key == "start":
+                continue
+            elif len(values) > 1:
+                eventLoginGems[key] = 0
+                if dateDiffEvent < 0:
+                    range_start = 0
+                    range_end = days + dateDiffEvent + 1
+                else:
+                    range_start = dateDiffEvent + 1
+                    range_end = dateDiffEvent + days + 1
+                for value in values[range_start:range_end]:
+                    if isinstance(value, (int,float)):
+                        eventLoginGems[key] += value
+                if wantDetailedEvent and eventLoginGems[key] > 0 : print(f"You've earned: {eventLoginGems[key]} gems from {key}")
+            elif len(values) == 1:
+                if dateDiffEvent < 0:
+                    range_start = 0
+                    range_end = days + dateDiffEvent
+                else:
+                    range_start = dateDiffEvent
+                    range_end = dateDiffEvent + days
+                for value in values[range_start:range_end]:
+                    if isinstance(value, (int,float)):
+                        eventContentGems += value
+                if wantDetailedEvent and eventContentGems > 0 : print(f"You've earned: {eventContentGems} gems from {key}")
+
+        
     return eventContentGems, eventLoginGems
     
 def weeklyCalc(boolWeekly, days, startingDayWeekly):
@@ -201,6 +229,13 @@ if os.path.exists(path):
         savedDate = datetime.datetime.strptime(data['Date'], "%Y-%m-%d")
         savedDate = savedDate.date()
         days_difference = (today - savedDate).days
+        if "WantDetailedEvent" in data:
+            if data["WantDetailedEvent"]:
+                wantDetailedEvent = True
+            else:
+                wantDetailedEvent = False
+        else:
+            raise Exception("Something is missing in your json file, you cannot not use it")
         if "BuyWeekly" in data:
             if data["BuyWeekly"]:
                 dayRewardWeekly = data['Weekly'] + days_difference
@@ -274,7 +309,7 @@ if dayLogin > 7:
 saveDayLogin = dayLogin
     
 
-# Does user buy weekly and monthly?
+# Does user buy weekly and monthly + does user want detailed event?
 if useFile:
     if not 'doWeeklyFile' in locals() and not 'doMonthlyFile' in locals():
         raise Exception("Issue with the inputs.json file")
@@ -283,7 +318,7 @@ if useFile:
         gemsMonthlyBundle += monthlyCalc(doMonthlyFile, days, dayRewardMonthly)
     
 else:
-    doWeekly = isTrue(input('Do you want to purchase the weekly bundle? (y/n) : '))
+    doWeekly = isTrue(input('Do you want to purchase the weekly bundle? (y/n): '))
     if doWeekly:
         dayRewardWeekly = int(input('At what day reward are you (0 if not purchased, or 1 to 7): '))
         gemsWeeklyBundle += weeklyCalc(doWeekly, days, dayRewardWeekly)
@@ -292,14 +327,13 @@ else:
     if doMonthly:
         dayRewardMonthly = int(input('At what day reward are you (0 if not purchased, or 1 to 28): '))
         gemsMonthlyBundle += monthlyCalc(doMonthly, days, dayRewardMonthly)
+    wantDetailedEvent = isTrue(input('Do you want a detailed list of the where the gems from the event were earned? (y/n): '))
     
     pvp = rewardPvP()
 
+print("\n",end="")
 # Iterate over the number of days given
 for i in range(days):
-    gemsEventContentObtainedLastDay, gemsEventLoginObtainedLastDay = event(i)
-    gemsEventContent += gemsEventContentObtainedLastDay
-    gemsEventLogin += gemsEventLoginObtainedLastDay
     # Calculate the date for the current day in the loop
     date = today + timedelta(days=i+1)
     # Check if the current date is a Monday
@@ -316,20 +350,23 @@ for i in range(days):
         
     gemsKnighthood += 1
     gemsDailies += 4
-    
+
+gemsEventContentObtainedLastDay, gemsEventLoginObtainedLastDay = event()
+gemsEvent += gemsEventContentObtainedLastDay
+gemsEvent += sum(gemsEventLoginObtainedLastDay.values())
 print(printWhatEarned(gemsWeeklyBundle, "gems from the Weekly Bundle"))
 print(printWhatEarned(gemsMonthlyBundle, "gems from the Monthly Bundle"))
-print(printWhatEarned(gemsPvP, " gems from the PvP reward"))
-print(printWhatEarned(gemsLogin, " gems from base login reward"))
-print(printWhatEarned(gemsEventLogin, " gems from the event login reward"))
-print(printWhatEarned(gemsKnighthood, " gems from checking in your Knighthood"))
-print(printWhatEarned(gemsDailies, " gems from doing your dailies every day"))
+print(printWhatEarned(gemsPvP, "gems from the PvP reward"))
+print(printWhatEarned(gemsLogin, "gems from base login reward"))
+if not wantDetailedEvent: print(printWhatEarned(gemsEvent, "gems from the events currently available"))
+print(printWhatEarned(gemsKnighthood, "gems from checking in your Knighthood"))
+print(printWhatEarned(gemsDailies, "gems from doing your dailies every day"))
 print(printWhatEarned(gemsMaintenance, "gems from the maintenance compensation"))
-print(printWhatEarned(gemsEventContent, "gems from the events currently available"))
-gems+= gemsWeeklyBundle + gemsMonthlyBundle + gemsPvP + gemsLogin + gemsEventLogin + gemsKnighthood + gemsDailies + gemsMaintenance + gemsEventContent
-print(f'Total gems will be: {gems}')
+gems+= gemsWeeklyBundle + gemsMonthlyBundle + gemsPvP + gemsLogin + gemsEvent + gemsKnighthood + gemsDailies + gemsMaintenance
+print(f'\nTotal gems will be: {gems}')
 
 data = {
+    "WantDetailedEvent": wantDetailedEvent,
     "BuyWeekly": doWeekly,
     "Weekly": dayRewardWeekly,
     "BuyMonthly": doMonthly,
