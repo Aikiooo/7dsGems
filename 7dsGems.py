@@ -3,9 +3,18 @@ from datetime import timedelta
 import os
 import json
 import sys
+import hashlib
+import requests
 
-github_url = "https://github.com/Aikiooo/7dsGems"
-print(f"Latest version of the script --> \033[1;34;40m {github_url}\033[0m <--")
+with open('7dsGems.py', 'rb') as f:
+    local_hash = hashlib.sha1(f.read()).hexdigest()
+
+response = requests.get('https://raw.githubusercontent.com/Aikiooo/7dsGems/master/7dsGems.py')
+remote_hash = hashlib.sha1(response.content).hexdigest()
+
+if not local_hash == remote_hash:
+    github_url = "https://github.com/Aikiooo/7dsGems"
+    print(f"Script not up to date, latest version of the script --> \033[1;34;40m {github_url}\033[0m <--")
 
 # Get today's date
 now = datetime.datetime.today()
