@@ -25,10 +25,6 @@ try:
 except ImportError:
     raise SystemExit(f"Cannot check if the script is up to date, check yourself here --> \033[1;34;40m{github_url}\033[0m <-- ")
 
-    
-with open('7dsGems.py', 'rb') as f: 
-    local_hash = hashlib.sha1(f.read()).hexdigest()
-
 # Get today's date
 now = datetime.datetime.today()
 today = now.date()
