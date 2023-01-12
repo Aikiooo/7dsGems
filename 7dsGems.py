@@ -260,6 +260,7 @@ if os.path.exists(path):
         if "BuyWeekly" in data:
             if data["BuyWeekly"]:
                 dayRewardWeekly = data['Weekly'] + days_difference
+                while dayRewardWeekly > 7: dayRewardWeekly -= 7
                 doWeeklyFile = True
             else:
                 doWeeklyFile = False
@@ -268,6 +269,7 @@ if os.path.exists(path):
         if "BuyMonthly" in data:
             if data["BuyMonthly"]:
                 dayRewardMonthly = data['Monthly'] + days_difference
+                while dayRewardMonthly > 28: dayRewardMonthly -= 28
                 doMonthlyFile = True
             else:
                 doMonthlyFile = False
