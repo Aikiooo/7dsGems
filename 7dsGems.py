@@ -76,16 +76,16 @@ options = {
 
 eventList = [{
                 "start": ["2023-01-03"],
-                "loginEvent": [30, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-                "freeSumonEquivalent": [30],
-                "eventBoss": [5],
-                "fromMissions": [10]
+                'from the "Huge Check-In Event"': [30, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+                "as free summons equivalent": [30],
+                "from the event bosses": [5],
+                "from the missions": [10]
              },
              {
                 "start": ["2023-01-17"],
-                "finalBoss": [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
-                "specialStoryEvent": [5],
-                "boostedDailies": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                "from the Final Boss": [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
+                "from story bosses": [5],
+                "from boosted dailies": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
              }
 ]
 
@@ -117,7 +117,7 @@ def event():
                 for value in values[range_start:range_end]:
                     if isinstance(value, (int,float)):
                         eventLoginGems[key] += value
-                if wantDetailedEvent and eventLoginGems[key] > 0 : print(f"You've earned: {eventLoginGems[key]} gems from {key}")
+                if wantDetailedEvent and eventLoginGems[key] > 0 : print(f"You've earned: {eventLoginGems[key]} gems {key}")
             elif len(values) == 1:
                 if dateDiffEvent < 0:
                     range_start = 0
@@ -128,7 +128,7 @@ def event():
                 for value in values[range_start:range_end]:
                     if isinstance(value, (int,float)):
                         eventContentGems += value
-                if wantDetailedEvent and eventContentGems > 0 : print(f"You've earned: {eventContentGems} gems from {key}")
+                if wantDetailedEvent and eventContentGems > 0 : print(f"You've earned: {eventContentGems} gems {key}")
 
         
     return eventContentGems, eventLoginGems
@@ -218,7 +218,7 @@ def rewardPvP():
     return(pvp)
 
 def printWhatEarned(earnedLocation, textEarnedLocation):
-    return(f"You\'ve earned: {earnedLocation} from {textEarnedLocation}")
+    return(f"You\'ve earned: {earnedLocation} gems from {textEarnedLocation}")
 
 def isTrue(response):
     response = response.lower()
@@ -373,14 +373,14 @@ for i in range(days):
 gemsEventContentObtainedLastDay, gemsEventLoginObtainedLastDay = event()
 gemsEvent += gemsEventContentObtainedLastDay
 gemsEvent += sum(gemsEventLoginObtainedLastDay.values())
-print(printWhatEarned(gemsWeeklyBundle, "gems from the Weekly Bundle"))
-print(printWhatEarned(gemsMonthlyBundle, "gems from the Monthly Bundle"))
-print(printWhatEarned(gemsPvP, "gems from the PvP reward"))
-print(printWhatEarned(gemsLogin, "gems from base login reward"))
-if not wantDetailedEvent: print(printWhatEarned(gemsEvent, "gems from the events currently available"))
-print(printWhatEarned(gemsKnighthood, "gems from checking in your Knighthood"))
-print(printWhatEarned(gemsDailies, "gems from doing your dailies every day"))
-print(printWhatEarned(gemsMaintenance, "gems from the maintenance compensation"))
+print(printWhatEarned(gemsWeeklyBundle, "the Weekly Bundle"))
+print(printWhatEarned(gemsMonthlyBundle, "the Monthly Bundle"))
+print(printWhatEarned(gemsPvP, "the PvP reward"))
+print(printWhatEarned(gemsLogin, "base login reward"))
+if not wantDetailedEvent: print(printWhatEarned(gemsEvent, "the events currently available"))
+print(printWhatEarned(gemsKnighthood, "checking in your Knighthood"))
+print(printWhatEarned(gemsDailies, "doing your dailies every day"))
+print(printWhatEarned(gemsMaintenance, "the maintenance compensation"))
 gems+= gemsWeeklyBundle + gemsMonthlyBundle + gemsPvP + gemsLogin + gemsEvent + gemsKnighthood + gemsDailies + gemsMaintenance
 print(f'\nTotal gems will be: {gems}')
 
