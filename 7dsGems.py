@@ -1,5 +1,5 @@
 import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import os
 import json
 import sys
@@ -25,9 +25,18 @@ try:
 except ImportError:
     raise SystemExit(f"Cannot check if the script is up to date, check yourself here --> \033[1;34;40m{github_url}\033[0m <-- ")
 
-# Get today's date
-now = datetime.datetime.today()
-today = now.date()
+
+# France reset is:
+game_start_time = datetime.strptime("8:00", "%H:%M")
+# Get user time in UTC
+now_utc = datetime.utcnow()
+now_utc = now_utc.replace(microsecond=0)
+current_time_utc = now_utc.time()
+
+if current_time_utc >= game_start_time.time():
+    today = now_utc.date()
+else:
+    today = now_utc.date() - timedelta(days=1)
 
 dayRewardMonthly = None
 dayRewardWeekly = None
@@ -102,7 +111,7 @@ def event():
     eventLoginGems = {}
     
     for xEvent in eventList:
-        dateDiffEvent = (today - datetime.datetime.strptime(xEvent['start'][0], "%Y-%m-%d").date()).days
+        dateDiffEvent = (today - datetime.strptime(xEvent['start'][0], "%Y-%m-%d").date()).days
         for key, values in xEvent.items():
             if key == "start":
                 continue
@@ -114,10 +123,11 @@ def event():
                 else:
                     range_start = dateDiffEvent + 1
                     range_end = dateDiffEvent + days + 1
-                for value in values[range_start:range_end]:
-                    if isinstance(value, (int,float)):
-                        eventLoginGems[key] += value
-                if wantDetailedEvent and eventLoginGems[key] > 0 : print(f"You've earned: {eventLoginGems[key]} gems {key}")
+                if range_end >= 0:
+                    for value in values[range_start:range_end]:
+                        if isinstance(value, (int,float)):
+                            eventLoginGems[key] += value
+                    if wantDetailedEvent and eventLoginGems[key] > 0 : print(f"You've earned: {eventLoginGems[key]} gems {key}")
             elif len(values) == 1:
                 if dateDiffEvent < 0:
                     range_start = 0
@@ -125,12 +135,13 @@ def event():
                 else:
                     range_start = dateDiffEvent
                     range_end = dateDiffEvent + days
-                for value in values[range_start:range_end]:
-                    if isinstance(value, (int,float)):
-                        eventContentGems += value
-                if wantDetailedEvent and eventContentGems > 0 : print(f"You've earned: {eventContentGems} gems {key}")
+                if range_end >= 0:
+                    for value in values[range_start:range_end]:
+                        if isinstance(value, (int,float)):
+                            eventContentGems += value
+                    if wantDetailedEvent and eventContentGems > 0 : print(f"You've earned: {eventContentGems} gems {key}")
 
-        
+
     return eventContentGems, eventLoginGems
     
 def weeklyCalc(boolWeekly, days, startingDayWeekly):
@@ -247,7 +258,7 @@ if os.path.exists(path):
     if useFile:
         f = open(path)
         data = json.load(f)
-        savedDate = datetime.datetime.strptime(data['Date'], "%Y-%m-%d")
+        savedDate = datetime.strptime(data['Date'], "%Y-%m-%d")
         savedDate = savedDate.date()
         days_difference = (today - savedDate).days
         if "WantDetailedEvent" in data:
@@ -304,7 +315,7 @@ while True:
     else:
         try:
             daysOrDatePrompted = daysOrDatePrompted.replace("/", "-")
-            daysOrDatePrompted = datetime.datetime.strptime(daysOrDatePrompted, "%Y-%m-%d")
+            daysOrDatePrompted = datetime.strptime(daysOrDatePrompted, "%Y-%m-%d")
             daysOrDatePrompted = daysOrDatePrompted.date()
             days = (daysOrDatePrompted - today).days
             print(f"It will calculate the number of gems earned in {days} days.")
