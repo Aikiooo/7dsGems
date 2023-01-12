@@ -90,7 +90,7 @@ eventList = [{
 ]
 
 file_name = "inputs"
-path = f".\{file_name}.json"
+path = f"./{file_name}.json"
 
 doWeekly = False
 doMonthly = False
@@ -291,25 +291,24 @@ if os.path.exists(path):
 gems = get_integer('How many gems do you have? : ')
 
 # Prompt the user for the number of days to consider
-daysOrDatePrompted = input(f'For how many days does it has to calculate?\nYou can also type a date in format: {today}: ')
-daysOrDatePrompted = daysOrDatePrompted.strip()
+while True:
+    daysOrDatePrompted = input(f'For how many days does it has to calculate?\nYou can also type a date in format: {today}: ')
+    daysOrDatePrompted = daysOrDatePrompted.strip()
 
-if daysOrDatePrompted.isdigit():
-    days = int(daysOrDatePrompted)
-    print(f"It will calculate the number of gems earned in {days} days.")
-    pass
-else:
-    # Try to parse the date
-    try:
-        daysOrDatePrompted = daysOrDatePrompted.replace("/", "-")
-        daysOrDatePrompted = datetime.datetime.strptime(daysOrDatePrompted, "%Y-%m-%d")
-        daysOrDatePrompted = daysOrDatePrompted.date()
-        days = (daysOrDatePrompted - today).days
+    if daysOrDatePrompted.isdigit():
+        days = int(daysOrDatePrompted)
         print(f"It will calculate the number of gems earned in {days} days.")
-        pass
-    except ValueError:
-        # The user didn't enter a valid date
-        raise Exception("Invalid input. Please try again.")
+        break
+    else:
+        try:
+            daysOrDatePrompted = daysOrDatePrompted.replace("/", "-")
+            daysOrDatePrompted = datetime.datetime.strptime(daysOrDatePrompted, "%Y-%m-%d")
+            daysOrDatePrompted = daysOrDatePrompted.date()
+            days = (daysOrDatePrompted - today).days
+            print(f"It will calculate the number of gems earned in {days} days.")
+            break
+        except ValueError:
+            print("Invalid input. Please try again.")
 if days < 0:
     raise Exception("Your input resulted in a negative number.")
 
