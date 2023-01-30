@@ -327,11 +327,11 @@ if days < 0:
 
 
 # Prompt the user for which login reward are they at
-while True:
+while not boolLogin:
     try:
-        if not boolLogin:
-            dayLogin = get_integer("Type which day you are on your login bonus (1 to 14): ")
+        dayLogin = get_integer("Type which day you are on your login bonus (1 to 14): ")
         if 1 <= dayLogin <= 14:
+            boolLogin = True
             break
         else:
             print("The value cannot be lower than 1 and cannot be higher than 14.")
