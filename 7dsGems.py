@@ -22,8 +22,8 @@ try:
     except requests.exceptions.RequestException as e:
         raise SystemExit(f"No Internet connection, check for latest version of the script here --> \033[1;34;40m{github_url}\033[0m <--")
 
-except ImportError:
-    raise SystemExit(f"Cannot check if the script is up to date, check yourself here --> \033[1;34;40m{github_url}\033[0m <-- ")
+except:
+    print(f"Cannot check if the script is up to date, check yourself here --> \033[1;34;40m{github_url}\033[0m <-- ")
 
 
 # France reset is:
