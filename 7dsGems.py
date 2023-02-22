@@ -95,7 +95,19 @@ eventList = [{
                 "from the Final Boss": [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
                 "from story bosses": [5],
                 "from boosted dailies": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-             }
+             },
+             {
+                "start": ["2023-02-14"],
+                "from Check-In Event": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                "from the Final Boss": [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
+                "from event reward": [5]
+             },
+             {
+                "start": ["2023-02-28"],
+                "from Check-In Event": [20, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10],
+                "Labyrinth reward": [30],
+                "Labyrinth shop": [10]
+             },             
 ]
 
 file_name = "inputs"
@@ -139,7 +151,7 @@ def event():
                     for value in values[range_start:range_end]:
                         if isinstance(value, (int,float)):
                             eventContentGems += value
-                    if wantDetailedEvent and eventContentGems > 0 : print(f"You've earned: {eventContentGems} gems {key}")
+                    if wantDetailedEvent and eventContentGems > 0 :print(f"You've earned: {value} gems {key}")
 
 
     return eventContentGems, eventLoginGems
