@@ -98,15 +98,15 @@ eventList = [{
              },
              {
                 "start": ["2023-02-14"],
-                "from Check-In Event": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                "from Freya Check-In Event": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
                 "from the Final Boss": [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35],
                 "from event reward": [5]
              },
              {
                 "start": ["2023-02-28"],
-                "from Check-In Event": [20, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10],
-                "Labyrinth reward": [30],
-                "Labyrinth shop": [10]
+                "from Global 3 years anniversary Check-In Event": [20, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10],
+                "from Labyrinth clear reward": [30],
+                "from Labyrinth shop": [10]
              },             
 ]
 
@@ -143,10 +143,10 @@ def event():
             elif len(values) == 1:
                 if dateDiffEvent < 0:
                     range_start = 0
-                    range_end = days + dateDiffEvent
+                    range_end = days + dateDiffEvent  + 1
                 else:
-                    range_start = dateDiffEvent
-                    range_end = dateDiffEvent + days
+                    range_start = dateDiffEvent  + 1
+                    range_end = dateDiffEvent + days  + 1
                 if range_end >= 0:
                     for value in values[range_start:range_end]:
                         if isinstance(value, (int,float)):
